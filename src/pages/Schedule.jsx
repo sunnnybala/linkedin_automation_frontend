@@ -117,39 +117,37 @@ export default function Schedule() {
     }
   }
 
-  if (loading) return <div style={{ padding: 16 }}>Loading…</div>
+  if (loading) return <div className="container" style={{ padding: 16 }}>Loading…</div>
 
   return (
-    <div style={{ maxWidth: 720, margin: '24px auto', padding: 16 }}>
-      <h2>Posting Schedule</h2>
-      {error && <div style={{ color: 'red', marginBottom: 12 }}>{error}</div>}
-      <form onSubmit={onSubmit}>
-        <div style={{ marginBottom: 12 }}>
-          <label>Cadence<br />
-            <select value={cadence} onChange={(e) => setCadence(e.target.value)}>
+    <div className="container" style={{ maxWidth: 720 }}>
+      <div className="card">
+        <h2 style={{ marginBottom: 12 }}>Posting Schedule</h2>
+        {error && <div className="alert alert--error" style={{ marginBottom: 12 }}>{error}</div>}
+        {savedMsg && <div className="alert alert--success" style={{ marginBottom: 12 }}>{savedMsg}</div>}
+        <form className="form" onSubmit={onSubmit}>
+          <div className="form__group">
+            <label htmlFor="cadence">Schedule time</label>
+            <select id="cadence" className="select" value={cadence} onChange={(e) => setCadence(e.target.value)}>
               {cadenceOptions.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
               ))}
             </select>
-          </label>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Timezone<br />
-            <input value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="e.g., America/Los_Angeles" />
-          </label>
-        </div>
-        <div style={{ marginBottom: 12 }}>
-          <label>Topics (up to 5)</label>
-          <TopicsInput value={topics} onChange={setTopics} max={5} />
-        </div>
-        <div style={{ display: 'flex', gap: 12 }}>
-          <button type="submit" disabled={saving}>{saving ? 'Saving…' : 'Submit'}</button>
-          <button type="button" onClick={onRunNow} disabled={running}>{running ? 'Running…' : 'Run Now'}</button>
-        </div>
-        {savedMsg && (
-          <div style={{ marginTop: 8, color: 'green' }}>{savedMsg}</div>
-        )}
-      </form>
+          </div>
+          <div className="form__group">
+            <label htmlFor="timezone">Timezone</label>
+            <input id="timezone" className="input" value={timezone} onChange={(e) => setTimezone(e.target.value)} placeholder="e.g., America/Los_Angeles" />
+          </div>
+          <div className="form__group">
+            <label>Add Topics (up to 5)</label>
+            <TopicsInput value={topics} onChange={setTopics} max={5} stacked />
+          </div>
+          <div className="form__actions">
+            <button className="btn btn--primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
+            <button className="btn btn--secondary" type="button" onClick={onRunNow} disabled={running}>{running ? 'Running…' : 'Run Now'}</button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

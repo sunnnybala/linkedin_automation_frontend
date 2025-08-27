@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function TopicsInput({ value = [], onChange, max = 5 }) {
+export default function TopicsInput({ value = [], onChange, max = 5, stacked = false }) {
   const [input, setInput] = useState('')
 
   const addTopic = () => {
@@ -25,23 +25,31 @@ export default function TopicsInput({ value = [], onChange, max = 5 }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 8 }}>
+      <div className={`chips${stacked ? ' chips--stacked' : ''}`}>
         {value.map(t => (
-          <span key={t} style={{ border: '1px solid #ccc', borderRadius: 16, padding: '4px 8px' }}>
+          <span key={t} className="chip">
             {t}
-            <button type="button" style={{ marginLeft: 6 }} onClick={() => removeTopic(t)} aria-label={`Remove ${t}`}>×</button>
+            <button
+              type="button"
+              className="chip__remove"
+              onClick={() => removeTopic(t)}
+              aria-label={`Remove ${t}`}
+            >
+              ×
+            </button>
           </span>
         ))}
       </div>
       <div style={{ display: 'flex', gap: 8 }}>
         <input
+          className="input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Add a topic and press Enter (max 5)"
-          style={{ flex: 1, padding: 8 }}
+          placeholder="e.g., AI Engineering, Product Management, ML Research, etc."
+          style={{ flex: 1 }}
         />
-        <button type="button" onClick={addTopic}>Add</button>
+        <button type="button" className="btn btn--secondary" onClick={addTopic}>Add</button>
       </div>
     </div>
   )
