@@ -1,8 +1,9 @@
 import Button from '../components/Button.jsx'
 
 export default function Login() {
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
   const handleLogin = () => {
-    window.location.href = 'http://localhost:3000/api/auth/linkedin'
+    window.location.href = `${BACKEND_URL}/api/auth/linkedin`
   }
 
   return (

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import TopicsInput from '../components/TopicsInput.jsx'
 
-const API_BASE = 'http://localhost:3000'
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
 
 async function api(path, options = {}) {
   const token = localStorage.getItem('token')
