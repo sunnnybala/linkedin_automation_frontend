@@ -74,7 +74,7 @@ export default function Login() {
                       c4.9,0,7.8,3.1,7.8,9.3V34z M4,8C1.8,8,0,6.2,0,4s1.8-4,4-4s4,1.8,4,4
                       S6.2,8,4,8z M0,34h8V11.5H0V34z" />
                   </svg>
-                  <span>Sign in with LinkedIn</span>
+                  <span id="sign-in-with-linkedin">Sign in with LinkedIn</span>
                 </Button>
               </div>
             </div>
