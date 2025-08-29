@@ -4,10 +4,12 @@ import Login from './pages/Login.jsx'
 import AuthCallback from './pages/AuthCallback.jsx'
 import Schedule from './pages/Schedule.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import Header from './components/Header.jsx'
 
 function App() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />

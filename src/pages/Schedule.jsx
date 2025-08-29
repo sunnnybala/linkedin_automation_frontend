@@ -108,12 +108,66 @@ export default function Schedule() {
     try {
       console.log('[Schedule] run now for id', scheduleId)
       await api(`/api/schedules/${scheduleId}/run`, { method: 'POST' })
+      // refresh credits badge
+      window.dispatchEvent(new Event('credits:refresh'))
       alert('Triggered. It should run shortly.')
     } catch (e) {
       console.log('[Schedule] run now error', e)
       setError(e.message)
     } finally {
       setRunning(false)
+    }
+  }
+
+  const [buying, setBuying] = useState(false)
+  const [amount, setAmount] = useState(50)
+  const onBuyCredits = async () => {
+    try {
+      setBuying(true)
+      const order = await api('/api/credits/order', { method: 'POST', body: JSON.stringify({ amount }) })
+      if (!order?.orderId || !order?.keyId) throw new Error('Failed to create order')
+
+      const options = {
+        key: order.keyId,
+        amount: order.amount,
+        currency: order.currency || 'INR',
+        name: 'Credits Purchase',
+        description: `Buy credits (₹10 per credit)`,
+        order_id: order.orderId,
+        handler: async function (response) {
+          try {
+            await api('/api/credits/verify', {
+              method: 'POST',
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            })
+            window.dispatchEvent(new Event('credits:refresh'))
+            alert('Payment successful! Credits will reflect shortly.')
+          } catch (e) {
+            alert('Verification failed. Please contact support.')
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setBuying(false)
+          }
+        },
+        prefill: {
+          name: '',
+          email: ''
+        },
+        theme: { color: '#536DFE' }
+      }
+      // @ts-ignore
+      const rzp = new window.Razorpay(options)
+      rzp.open()
+    } catch (e) {
+      alert(e.message || 'Failed to start payment')
+    } finally {
+      setBuying(false)
     }
   }
 
@@ -147,6 +201,21 @@ export default function Schedule() {
             <button className="btn btn--secondary" type="button" onClick={onRunNow} disabled={running}>{running ? 'Running…' : 'Run Now'}</button>
           </div>
         </form>
+      </div>
+      {/* Buy credits section */}
+      <div className="card" style={{ marginTop: 16 }}>
+        <h3 style={{ marginBottom: 8 }}>Buy Credits</h3>
+        <p className="muted" style={{ marginBottom: 8 }}>₹10 per credit. Minimum purchase ₹50.</p>
+        <div className="form__group" style={{ maxWidth: 220 }}>
+          <label htmlFor="amount">Amount (₹)</label>
+          <input id="amount" className="input" type="number" min="50" step="10" value={amount}
+                 onChange={(e) => setAmount(Math.max(50, Math.round(Number(e.target.value) || 50)))} />
+        </div>
+        <div className="form__actions">
+          <button className="btn btn--primary" type="button" onClick={onBuyCredits} disabled={buying}>
+            {buying ? 'Redirecting…' : 'Buy Credits'}
+          </button>
+        </div>
       </div>
     </div>
   )
