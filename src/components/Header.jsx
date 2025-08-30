@@ -9,7 +9,9 @@ async function api(path) {
   })
   if (res.status === 401) {
     localStorage.removeItem('token')
-    window.location.href = '/'
+    setBalance(null)
+    // Inform app to handle unauthenticated state without hard reloads
+    window.dispatchEvent(new Event('app:unauthenticated'))
     return null
   }
   if (!res.ok) return null
@@ -18,6 +20,7 @@ async function api(path) {
 
 export default function Header() {
   const [balance, setBalance] = useState(null)
+  const token = localStorage.getItem('token')
 
   async function refresh() {
     try {
@@ -27,6 +30,8 @@ export default function Header() {
   }
 
   useEffect(() => {
+    // Only attempt to refresh credits if authenticated
+    if (!localStorage.getItem('token')) return
     refresh()
     const onFocus = () => refresh()
     const onCustom = () => refresh()
@@ -39,6 +44,9 @@ export default function Header() {
       clearInterval(id)
     }
   }, [])
+
+  // Hide credits header entirely when not authenticated
+  if (!token) return null
 
   return (
     <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '8px 16px' }}>

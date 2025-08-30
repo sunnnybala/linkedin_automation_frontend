@@ -1,14 +1,23 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import './App.css'
 import Login from './pages/Login.jsx'
 import AuthCallback from './pages/AuthCallback.jsx'
 import Schedule from './pages/Schedule.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Header from './components/Header.jsx'
+import React from 'react'
+function AppInner() {
+  const navigate = useNavigate()
+  // Listen for global unauthenticated events and navigate SPA-side
+  // Avoids hard reload loops on mobile
+  React.useEffect(() => {
+    const onUnauth = () => navigate('/', { replace: true })
+    window.addEventListener('app:unauthenticated', onUnauth)
+    return () => window.removeEventListener('app:unauthenticated', onUnauth)
+  }, [navigate])
 
-function App() {
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <Routes>
         <Route path="/" element={<Login />} />
@@ -23,6 +32,14 @@ function App() {
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+    </>
+  )
+}
+
+function App() {
+  return (
+    <BrowserRouter>
+      <AppInner />
     </BrowserRouter>
   )
 }

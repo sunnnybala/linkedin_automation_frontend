@@ -1,9 +1,9 @@
 import Button from '../components/Button.jsx'
 
 export default function Login() {
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000'
+  const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000'
   const handleLogin = () => {
-    window.location.href = `${BACKEND_URL}/api/check/linkedin`
+    window.location.href = `${API_BASE}/api/check/linkedin`
   }
 
   return (
@@ -54,9 +54,11 @@ export default function Login() {
                 <ul style={{ margin: '0 0 12px 20px' }}>
                   <li>Sign in with LinkedIn (secure OAuth—no password stored).</li>
                   <li>Add topics you care about (e.g., AI Engineering, PM, ML Research).</li>
-                  <li>Choose your cadence and time window.</li>
-                  <li>Our AI agents track trusted sources and trending conversations.</li>
+                  <li>Choose your time window.</li>
+                  <li>Our AI agents track trusted sources and latest Industry Trends.</li>
                   <li>We generate concise, relevant posts and publish on your schedule.</li>
+                  <li>We send a email to you with the generated post for approval before publishing.</li>
+                  <li>Every post costs one credit, you start with 5 free credits. You can buy more credits later .</li>
                 </ul>
                 <p className="muted">Update topics or schedule anytime.</p>
               </div>

@@ -18,7 +18,8 @@ async function api(path, options = {}) {
   if (res.status === 401) {
     console.log('[API] 401, clearing token and redirecting to /')
     localStorage.removeItem('token')
-    window.location.href = '/'
+    // Broadcast so app can navigate without hard reload
+    window.dispatchEvent(new Event('app:unauthenticated'))
     return
   }
   if (!res.ok) {
@@ -30,6 +31,14 @@ async function api(path, options = {}) {
 }
 
 export default function Schedule() {
+  function extractError(e, fallback) {
+    const raw = e && typeof e.message === 'string' ? e.message : ''
+    try {
+      const parsed = JSON.parse(raw)
+      if (parsed && typeof parsed.error === 'string') return parsed.error
+    } catch (_) {}
+    return fallback
+  }
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [running, setRunning] = useState(false)
@@ -67,7 +76,7 @@ export default function Schedule() {
         }
       } catch (e) {
         console.log('[Schedule] fetch error', e)
-        setError(e.message)
+        setError(extractError(e, 'Failed to load schedule'))
       } finally {
         if (mounted) setLoading(false)
       }
@@ -92,7 +101,7 @@ export default function Schedule() {
       setSavedMsg('Saved successfully')
     } catch (e) {
       console.log('[Schedule] submit error', e)
-      setError(e.message)
+      setError(extractError(e, 'Failed to save'))
     } finally {
       setSaving(false)
     }
@@ -113,7 +122,7 @@ export default function Schedule() {
       alert('Triggered. It should run shortly.')
     } catch (e) {
       console.log('[Schedule] run now error', e)
-      setError(e.message)
+      setError(extractError(e, 'Failed to run'))
     } finally {
       setRunning(false)
     }
@@ -165,7 +174,8 @@ export default function Schedule() {
       const rzp = new window.Razorpay(options)
       rzp.open()
     } catch (e) {
-      alert(e.message || 'Failed to start payment')
+      console.log('[Schedule] buy credits error', e)
+      alert(extractError(e, 'Failed to start payment'))
     } finally {
       setBuying(false)
     }
@@ -198,9 +208,10 @@ export default function Schedule() {
           </div>
           <div className="form__actions">
             <button className="btn btn--primary" type="submit" disabled={saving}>{saving ? 'Saving…' : 'Save'}</button>
-            <button className="btn btn--secondary" type="button" onClick={onRunNow} disabled={running}>{running ? 'Running…' : 'Run Now'}</button>
+            <button className="btn btn--secondary" type="button" onClick={onRunNow} disabled={running}>{running ? 'Running…(Wait a moment)' : 'Run Now'}</button>
           </div>
         </form>
+        
       </div>
       {/* Buy credits section */}
       <div className="card" style={{ marginTop: 16 }}>
