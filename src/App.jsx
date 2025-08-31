@@ -6,6 +6,7 @@ import Schedule from './pages/Schedule.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import Header from './components/Header.jsx'
 import React from 'react'
+import { Analytics } from '@vercel/analytics/react';
 function AppInner() {
   const navigate = useNavigate()
   // Listen for global unauthenticated events and navigate SPA-side
@@ -38,9 +39,12 @@ function AppInner() {
 
 function App() {
   return (
+    <div>
     <BrowserRouter>
       <AppInner />
     </BrowserRouter>
+    <Analytics />
+    </div>
   )
 }
 
